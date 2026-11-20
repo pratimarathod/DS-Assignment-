@@ -1,0 +1,220 @@
+#include <iostream>
+#include <queue>
+#include <stack>
+#include <string>
+using namespace std;
+
+struct Call
+{
+    int id;
+    string name;
+    string issue;
+    int priority;
+};
+
+// Queue for normal calls
+queue<Call> normalCalls;
+
+// Priority Queue for urgent calls
+struct Compare
+{
+    bool operator()(Call a, Call b)
+    {
+        return a.priority > b.priority;
+    }
+};
+
+priority_queue<Call, vector<Call>, Compare> urgentCalls;
+
+// Stack for resolved calls
+stack<Call> resolvedCalls;
+
+int callID = 1;
+
+// Add Normal Call
+void addNormalCall()
+{
+    Call c;
+
+    c.id = callID++;
+
+    cout << "Enter Customer Name: ";
+    cin >> c.name;
+
+    cout << "Enter Issue: ";
+    cin >> c.issue;
+
+    normalCalls.push(c);
+
+    cout << "Normal Call Added Successfully!\n";
+}
+
+// Add Urgent Call
+void addUrgentCall()
+{
+    Call c;
+
+    c.id = callID++;
+
+    cout << "Enter Customer Name: ";
+    cin >> c.name;
+
+    cout << "Enter Issue: ";
+    cin >> c.issue;
+
+    cout << "Enter Priority (1 = Highest, 5 = Lowest): ";
+    cin >> c.priority;
+
+    urgentCalls.push(c);
+
+    cout << "Urgent Call Added Successfully!\n";
+}
+
+// Process Call
+void processCall()
+{
+    Call c;
+
+    if (!urgentCalls.empty())
+    {
+        c = urgentCalls.top();
+        urgentCalls.pop();
+    }
+    else if (!normalCalls.empty())
+    {
+        c = normalCalls.front();
+        normalCalls.pop();
+    }
+    else
+    {
+        cout << "No Calls Available!\n";
+        return;
+    }
+
+    cout << "\nProcessing Call...";
+    cout << "\nCall ID: " << c.id;
+    cout << "\nCustomer: " << c.name;
+    cout << "\nIssue: " << c.issue << endl;
+
+    resolvedCalls.push(c);
+
+    cout << "Call Resolved Successfully!\n";
+}
+
+// Display Resolved History
+void displayHistory()
+{
+    if (resolvedCalls.empty())
+    {
+        cout << "No Resolved Calls!\n";
+        return;
+    }
+
+    stack<Call> temp = resolvedCalls;
+
+    cout << "\n--- RESOLVED CALL HISTORY ---\n";
+
+    while (!temp.empty())
+    {
+        Call c = temp.top();
+
+        cout << "\nCall ID: " << c.id;
+        cout << "\nCustomer: " << c.name;
+        cout << "\nIssue: " << c.issue << endl;
+
+        temp.pop();
+    }
+}
+
+// Recursive IVR System
+void IVR()
+{
+    int choice;
+
+    cout << "\n--- CUSTOMER IVR MENU ---\n";
+    cout << "1. Billing Problem\n";
+    cout << "2. Product Information\n";
+    cout << "3. Technical Support\n";
+    cout << "4. Main Menu / Exit IVR\n";
+
+    cout << "Enter Choice: ";
+    cin >> choice;
+
+    switch (choice)
+    {
+        case 1:
+            cout << "Billing Support Selected!\n";
+            IVR();
+            break;
+
+        case 2:
+            cout << "Product Information Selected!\n";
+            IVR();
+            break;
+
+        case 3:
+            cout << "Technical Support Selected!\n";
+            IVR();
+            break;
+
+        case 4:
+            cout << "Returning from IVR!\n";
+            return;
+
+        default:
+            cout << "Invalid Choice!\n";
+            IVR();
+    }
+}
+
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n--- CUSTOMER SERVICE SYSTEM ---\n";
+        cout << "1. Add Normal Call\n";
+        cout << "2. Add Urgent Call\n";
+        cout << "3. Process Call\n";
+        cout << "4. Display Resolved History\n";
+        cout << "5. IVR System\n";
+        cout << "6. Exit\n";
+
+        cout << "Enter Choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                addNormalCall();
+                break;
+
+            case 2:
+                addUrgentCall();
+                break;
+
+            case 3:
+                processCall();
+                break;
+
+            case 4:
+                displayHistory();
+                break;
+
+            case 5:
+                IVR();
+                break;
+
+            case 6:
+                cout << "Thank You!\n";
+                break;
+
+            default:
+                cout << "Invalid Choice!\n";
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
