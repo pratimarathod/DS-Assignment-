@@ -1,0 +1,223 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Product
+{
+    int id;
+    string name, category, expiry;
+    float price;
+    int quantity;
+};
+
+Product p[100];
+int n = 0;
+
+// Add Product
+void addProduct()
+{
+    cout << "Enter Product ID: ";
+    cin >> p[n].id;
+
+    cout << "Enter Product Name: ";
+    cin >> p[n].name;
+
+    cout << "Enter Category: ";
+    cin >> p[n].category;
+
+    cout << "Enter Price: ";
+    cin >> p[n].price;
+
+    cout << "Enter Quantity: ";
+    cin >> p[n].quantity;
+
+    cout << "Enter Expiry Date (YYYY-MM-DD): ";
+    cin >> p[n].expiry;
+
+    n++;
+    cout << "Product Added Successfully!\n";
+}
+
+// Display Products
+void displayProducts()
+{
+    if (n == 0)
+    {
+        cout << "No Products Available!\n";
+        return;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << "\nProduct ID: " << p[i].id;
+        cout << "\nName: " << p[i].name;
+        cout << "\nCategory: " << p[i].category;
+        cout << "\nPrice: " << p[i].price;
+        cout << "\nQuantity: " << p[i].quantity;
+        cout << "\nExpiry Date: " << p[i].expiry << endl;
+    }
+}
+
+// Search Product
+void searchProduct()
+{
+    int id, choice;
+    string name;
+
+    cout << "1. Search by ID\n2. Search by Name\n";
+    cin >> choice;
+
+    if (choice == 1)
+    {
+        cout << "Enter Product ID: ";
+        cin >> id;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (p[i].id == id)
+            {
+                cout << "Product Found: " << p[i].name << endl;
+                return;
+            }
+        }
+    }
+    else if (choice == 2)
+    {
+        cout << "Enter Product Name: ";
+        cin >> name;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (p[i].name == name)
+            {
+                cout << "Product Found! ID: " << p[i].id << endl;
+                return;
+            }
+        }
+    }
+
+    cout << "Product Not Found!\n";
+}
+
+// Update Product
+void updateProduct()
+{
+    int id;
+    cout << "Enter Product ID to Update: ";
+    cin >> id;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (p[i].id == id)
+        {
+            cout << "Enter New Price: ";
+            cin >> p[i].price;
+
+            cout << "Enter New Quantity: ";
+            cin >> p[i].quantity;
+
+            cout << "Product Updated!\n";
+            return;
+        }
+    }
+
+    cout << "Product Not Found!\n";
+}
+
+// Delete Product
+void deleteProduct()
+{
+    int id;
+    cout << "Enter Product ID to Delete: ";
+    cin >> id;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (p[i].id == id)
+        {
+            for (int j = i; j < n - 1; j++)
+            {
+                p[j] = p[j + 1];
+            }
+
+            n--;
+            cout << "Product Deleted!\n";
+            return;
+        }
+    }
+
+    cout << "Product Not Found!\n";
+}
+
+// Sort Products
+void sortProducts()
+{
+    int choice;
+
+    cout << "1. Sort by Price\n";
+    cout << "2. Sort by Quantity\n";
+    cout << "3. Sort by Expiry Date\n";
+    cin >> choice;
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            bool swapNeeded = false;
+
+            if (choice == 1 && p[j].price > p[j+1].price)
+                swapNeeded = true;
+
+            else if (choice == 2 && p[j].quantity > p[j+1].quantity)
+                swapNeeded = true;
+
+            else if (choice == 3 && p[j].expiry > p[j+1].expiry)
+                swapNeeded = true;
+
+            if (swapNeeded)
+            {
+                Product temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+
+    cout << "Products Sorted Successfully!\n";
+    displayProducts();
+}
+
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n--- GROCERY INVENTORY SYSTEM ---\n";
+        cout << "1. Add Product\n";
+        cout << "2. Display Products\n";
+        cout << "3. Search Product\n";
+        cout << "4. Update Product\n";
+        cout << "5. Delete Product\n";
+        cout << "6. Sort Products\n";
+        cout << "7. Exit\n";
+
+        cout << "Enter Choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1: addProduct(); break;
+            case 2: displayProducts(); break;
+            case 3: searchProduct(); break;
+            case 4: updateProduct(); break;
+            case 5: deleteProduct(); break;
+            case 6: sortProducts(); break;
+            case 7: cout << "Thank You!"; break;
+            default: cout << "Invalid Choice!\n";
+        }
+
+    } while (choice != 7);
+
+    return 0;
+}
