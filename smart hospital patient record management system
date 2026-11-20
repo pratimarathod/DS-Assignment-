@@ -1,0 +1,299 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define SIZE 10
+
+// Patient structure
+struct Patient
+{
+    int id;
+    string name;
+    int age;
+    string disease;
+    Patient* next;
+};
+
+// Hash table node
+struct HashNode
+{
+    int id;
+    Patient* data;
+    HashNode* next;
+};
+
+Patient* head = NULL;
+HashNode* table[SIZE] = {NULL};
+
+// Hash function
+int hashFunction(int id)
+{
+    return id % SIZE;
+}
+
+// Search patient using Hash Table
+Patient* searchPatient(int id)
+{
+    int index = hashFunction(id);
+    HashNode* temp = table[index];
+
+    while (temp != NULL)
+    {
+        if (temp->id == id)
+            return temp->data;
+
+        temp = temp->next;
+    }
+    return NULL;
+}
+
+// Insert into Hash Table using Chaining
+void insertHash(Patient* p)
+{
+    int index = hashFunction(p->id);
+
+    HashNode* node = new HashNode;
+    node->id = p->id;
+    node->data = p;
+    node->next = table[index];
+
+    table[index] = node;
+}
+
+// Register new patient
+void registerPatient()
+{
+    Patient* p = new Patient;
+
+    cout << "Enter Patient ID: ";
+    cin >> p->id;
+
+    if (searchPatient(p->id) != NULL)
+    {
+        cout << "Patient ID already exists!\n";
+        delete p;
+        return;
+    }
+
+    cin.ignore();
+
+    cout << "Enter Patient Name: ";
+    getline(cin, p->name);
+
+    cout << "Enter Age: ";
+    cin >> p->age;
+    cin.ignore();
+
+    cout << "Enter Disease: ";
+    getline(cin, p->disease);
+
+    p->next = NULL;
+
+    if (head == NULL)
+        head = p;
+    else
+    {
+        Patient* temp = head;
+
+        while (temp->next != NULL)
+            temp = temp->next;
+
+        temp->next = p;
+    }
+
+    insertHash(p);
+
+    cout << "Patient registered successfully!\n";
+}
+
+// Update patient information
+void updatePatient()
+{
+    int id;
+
+    cout << "Enter Patient ID to update: ";
+    cin >> id;
+
+    Patient* p = searchPatient(id);
+
+    if (p == NULL)
+    {
+        cout << "Patient not found!\n";
+        return;
+    }
+
+    cin.ignore();
+
+    cout << "Enter New Name: ";
+    getline(cin, p->name);
+
+    cout << "Enter New Age: ";
+    cin >> p->age;
+    cin.ignore();
+
+    cout << "Enter New Disease: ";
+    getline(cin, p->disease);
+
+    cout << "Patient information updated!\n";
+}
+
+// Remove patient from Hash Table
+void deleteHash(int id)
+{
+    int index = hashFunction(id);
+
+    HashNode* temp = table[index];
+    HashNode* prev = NULL;
+
+    while (temp != NULL)
+    {
+        if (temp->id == id)
+        {
+            if (prev == NULL)
+                table[index] = temp->next;
+            else
+                prev->next = temp->next;
+
+            delete temp;
+            return;
+        }
+
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
+// Discharge patient
+void dischargePatient()
+{
+    int id;
+
+    cout << "Enter Patient ID to discharge: ";
+    cin >> id;
+
+    Patient* temp = head;
+    Patient* prev = NULL;
+
+    while (temp != NULL && temp->id != id)
+    {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL)
+    {
+        cout << "Patient not found!\n";
+        return;
+    }
+
+    if (prev == NULL)
+        head = temp->next;
+    else
+        prev->next = temp->next;
+
+    deleteHash(id);
+    delete temp;
+
+    cout << "Patient discharged successfully!\n";
+}
+
+// Display all patient records
+void displayPatients()
+{
+    Patient* temp = head;
+
+    if (temp == NULL)
+    {
+        cout << "No patient records available!\n";
+        return;
+    }
+
+    cout << "\n--- ALL PATIENT RECORDS ---\n";
+
+    while (temp != NULL)
+    {
+        cout << "\nPatient ID: " << temp->id;
+        cout << "\nName: " << temp->name;
+        cout << "\nAge: " << temp->age;
+        cout << "\nDisease: " << temp->disease;
+        cout << "\n----------------------\n";
+
+        temp = temp->next;
+    }
+}
+
+// Search patient
+void searchByID()
+{
+    int id;
+
+    cout << "Enter Patient ID: ";
+    cin >> id;
+
+    Patient* p = searchPatient(id);
+
+    if (p == NULL)
+    {
+        cout << "Patient not found!\n";
+        return;
+    }
+
+    cout << "\nPatient Found!\n";
+    cout << "ID: " << p->id << endl;
+    cout << "Name: " << p->name << endl;
+    cout << "Age: " << p->age << endl;
+    cout << "Disease: " << p->disease << endl;
+}
+
+// Main function
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n===== SMART HOSPITAL MANAGEMENT SYSTEM =====\n";
+        cout << "1. Register New Patient\n";
+        cout << "2. Update Patient Information\n";
+        cout << "3. Discharge Patient\n";
+        cout << "4. Display All Patients\n";
+        cout << "5. Search Patient by ID\n";
+        cout << "6. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                registerPatient();
+                break;
+
+            case 2:
+                updatePatient();
+                break;
+
+            case 3:
+                dischargePatient();
+                break;
+
+            case 4:
+                displayPatients();
+                break;
+
+            case 5:
+                searchByID();
+                break;
+
+            case 6:
+                cout << "Thank you!\n";
+                break;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
