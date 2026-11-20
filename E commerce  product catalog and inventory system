@@ -1,0 +1,299 @@
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define SIZE 10
+
+// Product structure
+struct Product
+{
+    int id;
+    string name;
+    float price;
+    int quantity;
+    Product* next;
+};
+
+// Hash table node
+struct HashNode
+{
+    int id;
+    Product* data;
+    HashNode* next;
+};
+
+Product* head = NULL;
+HashNode* table[SIZE] = {NULL};
+
+// Hash function
+int hashFunction(int id)
+{
+    return id % SIZE;
+}
+
+// Search product using Hash Table
+Product* searchProduct(int id)
+{
+    int index = hashFunction(id);
+    HashNode* temp = table[index];
+
+    while (temp != NULL)
+    {
+        if (temp->id == id)
+            return temp->data;
+
+        temp = temp->next;
+    }
+
+    return NULL;
+}
+
+// Insert product into Hash Table
+void insertHash(Product* p)
+{
+    int index = hashFunction(p->id);
+
+    HashNode* node = new HashNode;
+    node->id = p->id;
+    node->data = p;
+    node->next = table[index];
+
+    table[index] = node;
+}
+
+// Add new product
+void addProduct()
+{
+    Product* p = new Product;
+
+    cout << "Enter Product ID: ";
+    cin >> p->id;
+
+    if (searchProduct(p->id) != NULL)
+    {
+        cout << "Product ID already exists!\n";
+        delete p;
+        return;
+    }
+
+    cin.ignore();
+
+    cout << "Enter Product Name: ";
+    getline(cin, p->name);
+
+    cout << "Enter Price: ";
+    cin >> p->price;
+
+    cout << "Enter Quantity: ";
+    cin >> p->quantity;
+
+    p->next = NULL;
+
+    if (head == NULL)
+        head = p;
+    else
+    {
+        Product* temp = head;
+
+        while (temp->next != NULL)
+            temp = temp->next;
+
+        temp->next = p;
+    }
+
+    insertHash(p);
+
+    cout << "Product added successfully!\n";
+}
+
+// Update product details
+void updateProduct()
+{
+    int id;
+
+    cout << "Enter Product ID: ";
+    cin >> id;
+
+    Product* p = searchProduct(id);
+
+    if (p == NULL)
+    {
+        cout << "Product not found!\n";
+        return;
+    }
+
+    cin.ignore();
+
+    cout << "Enter New Product Name: ";
+    getline(cin, p->name);
+
+    cout << "Enter New Price: ";
+    cin >> p->price;
+
+    cout << "Enter New Quantity: ";
+    cin >> p->quantity;
+
+    cout << "Product updated successfully!\n";
+}
+
+// Delete product from Hash Table
+void deleteHash(int id)
+{
+    int index = hashFunction(id);
+
+    HashNode* temp = table[index];
+    HashNode* prev = NULL;
+
+    while (temp != NULL)
+    {
+        if (temp->id == id)
+        {
+            if (prev == NULL)
+                table[index] = temp->next;
+            else
+                prev->next = temp->next;
+
+            delete temp;
+            return;
+        }
+
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
+// Remove discontinued product
+void removeProduct()
+{
+    int id;
+
+    cout << "Enter Product ID to remove: ";
+    cin >> id;
+
+    Product* temp = head;
+    Product* prev = NULL;
+
+    while (temp != NULL && temp->id != id)
+    {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL)
+    {
+        cout << "Product not found!\n";
+        return;
+    }
+
+    if (prev == NULL)
+        head = temp->next;
+    else
+        prev->next = temp->next;
+
+    deleteHash(id);
+    delete temp;
+
+    cout << "Product removed successfully!\n";
+}
+
+// Display all products
+void displayProducts()
+{
+    Product* temp = head;
+
+    if (temp == NULL)
+    {
+        cout << "No products available!\n";
+        return;
+    }
+
+    cout << "\n--- PRODUCT CATALOG ---\n";
+
+    while (temp != NULL)
+    {
+        cout << "\nProduct ID: " << temp->id;
+        cout << "\nName: " << temp->name;
+        cout << "\nPrice: " << temp->price;
+        cout << "\nQuantity: " << temp->quantity;
+        cout << "\n----------------------\n";
+
+        temp = temp->next;
+    }
+}
+
+// Search product
+void searchByID()
+{
+    int id;
+
+    cout << "Enter Product ID: ";
+    cin >> id;
+
+    Product* p = searchProduct(id);
+
+    if (p == NULL)
+    {
+        cout << "Product not found!\n";
+        return;
+    }
+
+    cout << "\nProduct Found!\n";
+    cout << "ID: " << p->id << endl;
+    cout << "Name: " << p->name << endl;
+    cout << "Price: " << p->price << endl;
+    cout << "Quantity: " << p->quantity << endl;
+}
+
+// Main function
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n===== E-COMMERCE INVENTORY SYSTEM =====\n";
+        cout << "1. Add New Product\n";
+        cout << "2. Update Product Details\n";
+        cout << "3. Remove Product\n";
+        cout << "4. Display All Products\n";
+        cout << "5. Search Product by ID\n";
+        cout << "6. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                addProduct();
+                break;
+
+            case 2:
+                updateProduct();
+                break;
+
+            case 3:
+                removeProduct();
+                break;
+
+            case 4:
+                displayProducts();
+                break;
+
+            case 5:
+                searchByID();
+                break;
+
+            case 6:
+                cout << "Thank you!\n";
+                break;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
